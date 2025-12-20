@@ -5,13 +5,6 @@ Network)** using **Mininet + POX**, generate traffic across multiple
 host pairs, and visualize **live link utilization** using a **D3.js
 interactive dashboard**.
 
-This project is ideal for:
-
--   SDN learning & experimentation\
--   Visualizing multipath routing behavior\
--   Building datasets for ML-based routing/QoS research\
--   Demo-ready SDN lab setup
-
 ## 📦 1. Requirements
 
 Install core dependencies:
