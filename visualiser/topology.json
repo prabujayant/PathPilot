@@ -1,0 +1,26 @@
+{
+  "nodes": [
+    { "id": "h1", "type": "host" },
+    { "id": "h2", "type": "host" },
+    { "id": "s1", "type": "switch" },
+    { "id": "s2", "type": "switch" },
+    { "id": "s3", "type": "switch" },
+    { "id": "s4", "type": "switch" }
+  ],
+
+  "links": [
+    { "source": "h1", "target": "s1", "sw": "s1", "port": 1 },
+    { "source": "h1", "target": "s2", "sw": "s2", "port": 1 },
+    { "source": "h1", "target": "s3", "sw": "s3", "port": 1 },
+
+    { "source": "s1", "target": "s4", "sw": "s1", "port": 2 },
+    { "source": "s2", "target": "s4", "sw": "s2", "port": 2 },
+    { "source": "s3", "target": "s4", "sw": "s3", "port": 2 },
+
+    { "source": "s4", "target": "s1", "sw": "s4", "port": 1 },
+    { "source": "s4", "target": "s2", "sw": "s4", "port": 2 },
+    { "source": "s4", "target": "s3", "sw": "s4", "port": 3 },
+
+    { "source": "s4", "target": "h2", "sw": "s4", "port": 4 }
+  ]
+}

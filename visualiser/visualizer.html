@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>Mininet Traffic Visualizer</title>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+
+<style>
+    body { margin: 0; background: #111; color: #eee; font-family: sans-serif; }
+    svg { width: 100vw; height: 100vh; }
+    .node circle {
+        stroke: #fff;
+        stroke-width: 1.5px;
+    }
+    .host { fill: #4CAF50; }      /* green */
+    .switch { fill: #2196F3; }    /* blue */
+    .link {
+        stroke: #888;
+        stroke-opacity: 0.8;
+    }
+</style>
+</head>
+
+<body>
+<svg></svg>
+
+<script>
+const svg = d3.select("svg");
+const width = window.innerWidth;
+const height = window.innerHeight;
+
+let topology, simulation, link, node;
+
+// Load topology first
+Promise.all([
+    fetch("topology.json").then(r => r.json())
+]).then(start);
+
+function start([topologyData]) {
+    topology = topologyData;
+
+    // D3 force simulation
+    simulation = d3.forceSimulation(topology.nodes)
+        .force("link", d3.forceLink(topology.links).id(d => d.id).distance(120))
+        .force("charge", d3.forceManyBody().strength(-500))
+        .force("center", d3.forceCenter(width / 2, height / 2));
+
+    // Draw links
+    link = svg.append("g")
+        .selectAll("line")
+        .data(topology.links)
+        .enter().append("line")
+        .attr("class", "link")
+        .attr("stroke-width", 3);
+
+    // Draw nodes
+    node = svg.append("g")
+        .selectAll("circle")
+        .data(topology.nodes)
+        .enter().append("circle")
+        .attr("r", 18)
+        .attr("class", d => "node " + d.type)
+        .call(drag(simulation));
+
+    // Labels
+    svg.append("g")
+        .selectAll("text")
+        .data(topology.nodes)
+        .enter().append("text")
+        .text(d => d.id)
+        .attr("fill", "#eee")
+        .style("font-size", "14px");
+
+    // Tick update
+    simulation.on("tick", () => {
+        link.attr("x1", d => d.source.x)
+            .attr("y1", d => d.source.y)
+            .attr("x2", d => d.target.x)
+            .attr("y2", d => d.target.y);
+
+        node.attr("cx", d => d.x).attr("cy", d => d.y);
+
+        svg.selectAll("text")
+            .attr("x", d => d.x + 22)
+            .attr("y", d => d.y + 5);
+    });
+
+    // Start polling traffic
+    setInterval(updateTraffic, 1000);
+}
+
+
+// Drag behavior
+function drag(sim) {
+    return d3.drag()
+        .on("start", e => {
+            if (!e.active) sim.alphaTarget(0.3).restart();
+            e.subject.fx = e.subject.x;
+            e.subject.fy = e.subject.y;
+        })
+        .on("drag", e => {
+            e.subject.fx = e.x;
+            e.subject.fy = e.y;
+        })
+        .on("end", e => {
+            if (!e.active) sim.alphaTarget(0);
+            e.subject.fx = null;
+            e.subject.fy = null;
+        });
+}
+
+
+function updateTraffic() {
+    fetch("http://localhost:8001/stats")
+        .then(r => r.text())
+        .then(text => {
+            if (!text.trim()) return;
+
+            let rawStats;
+            try { rawStats = JSON.parse(text); }
+            catch { return; }   // ignore partial JSON
+
+            // Normalize keys to strings
+            const stats = {};
+            for (const sw of Object.keys(rawStats)) {
+                stats[String(sw)] = {};
+                for (const port of Object.keys(rawStats[sw])) {
+                    stats[String(sw)][String(port)] = rawStats[sw][port];
+                }
+            }
+
+            link.each(function(d) {
+                const swMatch = String(d.sw).match(/\d+/);
+                if (!swMatch) return "#444";
+                const sw = swMatch[0];
+                const port = String(d.port);
+
+                // If missing sw or port in topology → safe default
+                if (!sw || !port || !stats[sw] || !stats[sw][port]) {
+                    d3.select(this).attr("stroke", "#444").attr("stroke-width", 2);
+                    return;
+                }
+
+                const st = stats[sw][port];
+                const bps = (st.rx_bps || 0) + (st.tx_bps || 0);
+
+                d3.select(this)
+                    .attr("stroke", colorForTraffic(bps))
+                    .attr("stroke-width", thicknessForTraffic(bps));
+            });
+        });
+}
+
+
+// Color scale
+function colorForTraffic(bps) {
+    if (bps < 1e5) return "#0000FF";          // idle
+    if (bps < 5e5) return "#FFA500";       // light
+    if (bps < 2e6) return "#FF0000";       // medium
+    return "#FF0000";                      // heavy
+}
+
+// Link thickness
+function thicknessForTraffic(bps) {
+    return Math.min(2 + (bps / 5e5), 15);
+}
+</script>
+
+</body>
+</html>

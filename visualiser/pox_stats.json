@@ -1,0 +1,94 @@
+{
+  "4": {
+    "65534": {
+      "tx_bps": 0.0,
+      "rx_bps": 0.0,
+      "tx_packets": 0,
+      "rx_packets": 0
+    },
+    "1": {
+      "tx_bps": 327.8674242135367,
+      "rx_bps": 0.0,
+      "tx_packets": 29209,
+      "rx_packets": 176171
+    },
+    "4": {
+      "tx_bps": 327.8674242135367,
+      "rx_bps": 0.0,
+      "tx_packets": 47189,
+      "rx_packets": 634050
+    },
+    "2": {
+      "tx_bps": 0.0,
+      "rx_bps": 0.0,
+      "tx_packets": 379975,
+      "rx_packets": 106
+    },
+    "3": {
+      "tx_bps": 0.0,
+      "rx_bps": 0.0,
+      "tx_packets": 76296,
+      "rx_packets": 106
+    }
+  },
+  "1": {
+    "65534": {
+      "tx_bps": 0.0,
+      "rx_bps": 0.0,
+      "tx_packets": 0,
+      "rx_packets": 0
+    },
+    "1": {
+      "tx_bps": 0.0,
+      "rx_bps": 0.0,
+      "tx_packets": 124,
+      "rx_packets": 176081
+    },
+    "2": {
+      "tx_bps": 0.0,
+      "rx_bps": 327.8764884825224,
+      "tx_packets": 176171,
+      "rx_packets": 29209
+    }
+  },
+  "3": {
+    "65534": {
+      "tx_bps": 0.0,
+      "rx_bps": 0.0,
+      "tx_packets": 0,
+      "rx_packets": 0
+    },
+    "1": {
+      "tx_bps": 0.0,
+      "rx_bps": 0.0,
+      "tx_packets": 126,
+      "rx_packets": 12
+    },
+    "2": {
+      "tx_bps": 0.0,
+      "rx_bps": 0.0,
+      "tx_packets": 106,
+      "rx_packets": 76296
+    }
+  },
+  "2": {
+    "65534": {
+      "tx_bps": 0.0,
+      "rx_bps": 0.0,
+      "tx_packets": 0,
+      "rx_packets": 0
+    },
+    "1": {
+      "tx_bps": 0.0,
+      "rx_bps": 0.0,
+      "tx_packets": 142,
+      "rx_packets": 12
+    },
+    "2": {
+      "tx_bps": 0.0,
+      "rx_bps": 0.0,
+      "tx_packets": 106,
+      "rx_packets": 379975
+    }
+  }
+}

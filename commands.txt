@@ -1,0 +1,9 @@
+python3 -m http.server 8000 // visualiser
+python3 proxy.py            // visualiser
+python3 traffic_controller.py
+
+./pox.py openflow.discovery ext.linkstats ext.random_multipath // in pox install folder
+
+sudo mn --custom multipath.py --topo multipath --controller=remote,ip=127.0.0.1 //mininet folder
+h1 iperf -c h2 -u -b 10M -t 10 -i 1
+sudo python3 traffic_controller.py
