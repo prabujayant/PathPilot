@@ -7,28 +7,28 @@
       "rx_packets": 0
     },
     "1": {
-      "tx_bps": 327.8674242135367,
-      "rx_bps": 0.0,
-      "tx_packets": 29209,
-      "rx_packets": 176171
+      "tx_bps": 0.0,
+      "rx_bps": 327.76009762294234,
+      "tx_packets": 29225,
+      "rx_packets": 176189
     },
     "4": {
-      "tx_bps": 327.8674242135367,
+      "tx_bps": 0.0,
       "rx_bps": 0.0,
-      "tx_packets": 47189,
+      "tx_packets": 47205,
       "rx_packets": 634050
     },
     "2": {
       "tx_bps": 0.0,
       "rx_bps": 0.0,
-      "tx_packets": 379975,
-      "rx_packets": 106
+      "tx_packets": 379992,
+      "rx_packets": 124
     },
     "3": {
       "tx_bps": 0.0,
       "rx_bps": 0.0,
-      "tx_packets": 76296,
-      "rx_packets": 106
+      "tx_packets": 76313,
+      "rx_packets": 124
     }
   },
   "1": {
@@ -41,14 +41,14 @@
     "1": {
       "tx_bps": 0.0,
       "rx_bps": 0.0,
-      "tx_packets": 124,
-      "rx_packets": 176081
+      "tx_packets": 140,
+      "rx_packets": 176082
     },
     "2": {
-      "tx_bps": 0.0,
-      "rx_bps": 327.8764884825224,
-      "tx_packets": 176171,
-      "rx_packets": 29209
+      "tx_bps": 327.75385078669115,
+      "rx_bps": 0.0,
+      "tx_packets": 176189,
+      "rx_packets": 29225
     }
   },
   "3": {
@@ -59,16 +59,16 @@
       "rx_packets": 0
     },
     "1": {
-      "tx_bps": 0.0,
+      "tx_bps": 326.1401870266667,
       "rx_bps": 0.0,
-      "tx_packets": 126,
-      "rx_packets": 12
+      "tx_packets": 144,
+      "rx_packets": 13
     },
     "2": {
       "tx_bps": 0.0,
       "rx_bps": 0.0,
-      "tx_packets": 106,
-      "rx_packets": 76296
+      "tx_packets": 124,
+      "rx_packets": 76313
     }
   },
   "2": {
@@ -81,14 +81,14 @@
     "1": {
       "tx_bps": 0.0,
       "rx_bps": 0.0,
-      "tx_packets": 142,
-      "rx_packets": 12
+      "tx_packets": 159,
+      "rx_packets": 13
     },
     "2": {
       "tx_bps": 0.0,
       "rx_bps": 0.0,
-      "tx_packets": 106,
-      "rx_packets": 379975
+      "tx_packets": 124,
+      "rx_packets": 379992
     }
   }
 }

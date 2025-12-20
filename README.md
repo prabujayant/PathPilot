@@ -1,152 +1,101 @@
-🚀 Mininet Multipath Traffic Visualizer
+# 🚀 Mininet Multipath Traffic Visualizer
 
-A complete setup to simulate a multipath software-defined network (SDN) using Mininet + POX, generate traffic between hosts, and visualize live link load in a D3.js dashboard.
+A complete setup to simulate a **multipath SDN (Software-Defined
+Network)** using **Mininet + POX**, generate traffic across multiple
+host pairs, and visualize **live link utilization** using a **D3.js
+interactive dashboard**.
 
-This project includes:
+This project is ideal for:
 
-✓ Multipath Mininet Topology
-✓ POX Controller with Random Multipath Forwarding
-✓ Link Statistics Collector (linkstats.py)
-✓ Stats Proxy Server (proxy.py)
-✓ Traffic Generator with Auto-Discovery (traffic_controller.py)
-✓ Live D3.js Visualization (visualizer.html)
+-   SDN learning & experimentation\
+-   Visualizing multipath routing behavior\
+-   Building datasets for ML-based routing/QoS research\
+-   Demo-ready SDN lab setup
 
-📦 1. Requirements
+## 📦 1. Requirements
 
-Install:
+Install core dependencies:
 
+``` bash
 sudo apt update
 sudo apt install mininet python3 python3-pip
+```
 
+Install POX in your home directory:
 
-Install POX (inside your home directory):
-
+``` bash
 git clone https://github.com/noxrepo/pox.git
+```
 
-📁 2. Project Structure
+## 📁 2. Project Structure
 
-Your cloned repo should look like:
+    /your-repo
+    │
+    ├── multipath.py
+    ├── traffic_controller.py
+    ├── proxy.py
+    ├── topology.json
+    ├── visualizer.html
+    │
+    └── pox/
+        └── ext/
+            ├── linkstats.py
+            └── random_multipath.py
 
-/your-repo
-│
-├── multipath.py              # Mininet topology
-├── traffic_controller.py     # Auto host discovery + flow generator
-├── proxy.py                  # Exposes POX stats on port 8001
-├── topology.json             # Used by D3 visualizer
-├── visualizer.html           # Browser UI
-│
-└── pox/                      # POX controller folder
-    └── ext/
-        ├── linkstats.py      # Collects port stats into pox_stats.json
-        └── random_multipath.py  # Random multipath routing module
+Ensure the POX modules are placed in:
 
+    ~/pox/pox/ext/
 
-Make sure linkstats.py and random_multipath.py are placed inside:
+## 🛰 3. Step 1: Start the POX Controller
 
-~/pox/pox/ext/
-
-🛰 3. Step 1: Start POX Controller
-
-Open Terminal #1:
-
+``` bash
 cd ~/pox
 ./pox.py openflow.discovery ext.linkstats ext.random_multipath
+```
 
-🖧 4. Step 2: Start Mininet Topology
+## 🖧 4. Step 2: Start Mininet Topology
 
-Open Terminal #2 inside your cloned repo:
-
+``` bash
 sudo mn --custom multipath.py --topo multipath --controller=remote,ip=127.0.0.1
+```
 
-🔌 5. Step 3: Start Traffic Generator (Auto Discovery)
+## 🔌 5. Step 3: Start Traffic Generator
 
-Open Terminal #3 in your repo:
-
+``` bash
 sudo python3 traffic_controller.py
+```
 
+## 🌐 6. Step 4: Start the Stats Proxy
 
-This script:
-
-Auto-discovers all Mininet host PIDs
-
-Starts iperf TCP + UDP servers on each host
-
-Sends flows you defined inside FLOWS = [ … ]
-
-Repeats them forever if enabled
-
-Example output:
-
-[DISCOVERED HOSTS]: {'h1': {...}, 'h2': {...}}
-[TCP] h1 → h2: bw=10M, t=15s
-
-🌐 6. Step 4: Start Stats Proxy Server
-
-Open Terminal #4:
-
+``` bash
 python3 proxy.py
+```
 
+Stats available at:
 
-The proxy exposes POX link statistics as:
+    http://localhost:8001/stats
 
-http://localhost:8001/stats
-
-
-Used by the frontend (browser).
-
-📊 7. Step 5: Open the Visualizer
+## 📊 7. Step 5: Open the Visualizer
 
 Open:
 
-visualizer.html
+    visualizer.html
 
+## 🧠 8. How It Works
 
-You will see:
+### POX Modules
 
-Nodes = hosts + switches
+-   `linkstats.py` -- Polls switches and stores stats.
+-   `random_multipath.py` -- Installs random multipath routes.
 
-Links colored by current traffic load
+### Traffic Generator
 
-Line thickness increases with load
+-   Auto-discovers hosts\
+-   Starts iperf servers\
+-   Generates continuous flows
 
-Colors update every 1 second
+### Visualizer
 
-Traffic is visible only after traffic_controller.py generates flows.
-
-🧠 8. How It Works
-POX Modules:
-
-linkstats.py
-Polls all OpenFlow switches every 1 second
-→ stores stats in pox_stats.json
-
-random_multipath.py
-Installs a random path:
-s1→s4 OR s2→s4 OR s3→s4
-for every new TCP/UDP/ICMP flow
-
-Traffic Generator:
-
-Discovers host namespaces
-
-Starts iperf servers
-
-Sends controlled flows between hosts
-
-Produces sustained traffic for visualization or ML training
-
-Visualizer:
-
-Reads topology.json
-
-Fetches stats from proxy
-
-Draws colored, animated links:
-
-Color scale:
-
-Blue → Idle
-
-Orange → Light
-
-Red → Heavy
+-   Reads topology.json\
+-   Fetches live stats\
+-   Updates link color & thickness
