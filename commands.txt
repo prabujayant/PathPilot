@@ -7,3 +7,9 @@ python3 traffic_controller.py
 sudo mn --custom multipath.py --topo multipath --controller=remote,ip=127.0.0.1 //mininet folder
 h1 iperf -c h2 -u -b 10M -t 10 -i 1
 sudo python3 traffic_controller.py
+
+cd ~/qos/ml
+python3 train.py
+
+cd ~/qos/ml
+uvicorn server:app --host 0.0.0.0 --port 9000
