@@ -1,170 +1,496 @@
 <!DOCTYPE html>
-<html>
-<head>
-<meta charset="utf-8" />
-<title>Mininet Traffic Visualizer</title>
-<script src="https://d3js.org/d3.v7.min.js"></script>
+<html lang="en">
 
-<style>
-    body { margin: 0; background: #111; color: #eee; font-family: sans-serif; }
-    svg { width: 100vw; height: 100vh; }
-    .node circle {
-        stroke: #fff;
-        stroke-width: 1.5px;
-    }
-    .host { fill: #4CAF50; }      /* green */
-    .switch { fill: #2196F3; }    /* blue */
-    .link {
-        stroke: #888;
-        stroke-opacity: 0.8;
-    }
-</style>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SDN QoS Network Visualizer</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            overflow: hidden;
+        }
+
+        #header {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: #2d3748;
+            font-size: 28px;
+            font-weight: 600;
+        }
+
+        .subtitle {
+            color: #718096;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        #container {
+            display: flex;
+            height: calc(100vh - 80px);
+        }
+
+        #network-view {
+            flex: 1;
+            background: white;
+            margin: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+
+        #stats-panel {
+            width: 300px;
+            background: rgba(255, 255, 255, 0.95);
+            margin: 20px 20px 20px 0;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            opacity: 0.9;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: bold;
+            margin-top: 5px;
+        }
+
+        .legend {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 2px solid #e2e8f0;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 12px;
+            font-size: 13px;
+            gap: 12px;
+        }
+
+        .legend-color {
+            width: 40px;
+            height: 6px;
+            margin-right: 0;
+            border-radius: 3px;
+            flex-shrink: 0;
+        }
+
+        .tooltip {
+            position: absolute;
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.2s;
+            z-index: 1000;
+        }
+
+        .node text {
+            font-family: 'Segoe UI', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .link {
+            stroke-linecap: round;
+            transition: stroke-width 0.3s, stroke 0.3s;
+        }
+
+        .node circle {
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .node circle:hover {
+            stroke-width: 4px;
+        }
+
+        .status {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 10px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #48bb78;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
+        }
+    </style>
 </head>
 
 <body>
-<svg></svg>
+    <div id="header">
+        <h1>🌐 SDN QoS Network Visualizer</h1>
+        <div class="subtitle">Real-time Network Telemetry & Congestion Detection</div>
+    </div>
 
-<script>
-const svg = d3.select("svg");
-const width = window.innerWidth;
-const height = window.innerHeight;
+    <div id="container">
+        <div id="network-view">
+            <div class="status">
+                <div class="status-dot"></div>
+                <span>Live Monitoring</span>
+            </div>
+            <svg id="network"></svg>
+            <div class="tooltip" id="tooltip"></div>
+        </div>
 
-let topology, simulation, link, node;
+        <div id="stats-panel">
+            <div class="stat-card">
+                <div class="stat-label">Total Throughput</div>
+                <div class="stat-value" id="total-throughput">0</div>
+                <div style="font-size: 14px; margin-top: 5px;">Mbps</div>
+            </div>
 
-// Load topology first
-Promise.all([
-    fetch("topology.json").then(r => r.json())
-]).then(start);
+            <div class="stat-card" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                <div class="stat-label">Packet Drops</div>
+                <div class="stat-value" id="total-drops">0</div>
+                <div style="font-size: 14px; margin-top: 5px;">packets/sec</div>
+            </div>
 
-function start([topologyData]) {
-    topology = topologyData;
+            <div class="stat-card" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+                <div class="stat-label">Active Links</div>
+                <div class="stat-value" id="active-links">0</div>
+                <div style="font-size: 14px; margin-top: 5px;">connections</div>
+            </div>
 
-    // D3 force simulation
-    simulation = d3.forceSimulation(topology.nodes)
-        .force("link", d3.forceLink(topology.links).id(d => d.id).distance(120))
-        .force("charge", d3.forceManyBody().strength(-500))
-        .force("center", d3.forceCenter(width / 2, height / 2));
+            <div class="qos-actions">
+                <h3 style="margin-bottom: 15px; color: #2d3748;">⚡ QoS Actions</h3>
+                <div id="qos-feed" style="max-height: 200px; overflow-y: auto;">
+                    <div style="color: #718096; font-size: 12px; font-style: italic;">
+                        Waiting for QoS events...
+                    </div>
+                </div>
+            </div>
 
-    // Draw links
-    link = svg.append("g")
-        .selectAll("line")
-        .data(topology.links)
-        .enter().append("line")
-        .attr("class", "link")
-        .attr("stroke-width", 3);
+            <div class="legend">
+                <h3 style="margin-bottom: 15px; color: #2d3748;">📊 Link Traffic Status</h3>
 
-    // Draw nodes
-    node = svg.append("g")
-        .selectAll("circle")
-        .data(topology.nodes)
-        .enter().append("circle")
-        .attr("r", 18)
-        .attr("class", d => "node " + d.type)
-        .call(drag(simulation));
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #cbd5e0;"></div>
+                    <div>
+                        <strong>Idle</strong><br>
+                        <span style="font-size: 11px; color: #718096;">&lt;0.1 Mbps - No traffic</span>
+                    </div>
+                </div>
 
-    // Labels
-    svg.append("g")
-        .selectAll("text")
-        .data(topology.nodes)
-        .enter().append("text")
-        .text(d => d.id)
-        .attr("fill", "#eee")
-        .style("font-size", "14px");
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #48bb78;"></div>
+                    <div>
+                        <strong>Normal</strong><br>
+                        <span style="font-size: 11px; color: #718096;">0-5 Mbps - Low load</span>
+                    </div>
+                </div>
 
-    // Tick update
-    simulation.on("tick", () => {
-        link.attr("x1", d => d.source.x)
-            .attr("y1", d => d.source.y)
-            .attr("x2", d => d.target.x)
-            .attr("y2", d => d.target.y);
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #ed8936;"></div>
+                    <div>
+                        <strong>Medium</strong><br>
+                        <span style="font-size: 11px; color: #718096;">5-50 Mbps - Busy</span>
+                    </div>
+                </div>
 
-        node.attr("cx", d => d.x).attr("cy", d => d.y);
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #f56565;"></div>
+                    <div>
+                        <strong>High</strong><br>
+                        <span style="font-size: 11px; color: #718096;">&gt;50 Mbps - Heavy load</span>
+                    </div>
+                </div>
 
-        svg.selectAll("text")
-            .attr("x", d => d.x + 22)
-            .attr("y", d => d.y + 5);
-    });
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #9f7aea; border: 2px dashed #9f7aea; height: 2px;">
+                    </div>
+                    <div>
+                        <strong style="color: #9f7aea;">⚠️ Congested</strong><br>
+                        <span style="font-size: 11px; color: #718096;">Drops detected - Rerouting!</span>
+                    </div>
+                </div>
 
-    // Start polling traffic
-    setInterval(updateTraffic, 1000);
-}
+                <div
+                    style="margin-top: 20px; padding: 12px; background: #f7fafc; border-radius: 6px; border-left: 3px solid #667eea;">
+                    <div style="font-size: 11px; color: #2d3748; line-height: 1.6;">
+                        <strong>💡 How It Works:</strong><br>
+                        When a link turns <strong style="color: #9f7aea;">purple & dashed</strong>,
+                        the QoS Enforcer automatically reroutes traffic to prevent packet loss.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
+    <script>
+        const width = document.getElementById('network-view').clientWidth;
+        const height = document.getElementById('network-view').clientHeight;
 
-// Drag behavior
-function drag(sim) {
-    return d3.drag()
-        .on("start", e => {
-            if (!e.active) sim.alphaTarget(0.3).restart();
-            e.subject.fx = e.subject.x;
-            e.subject.fy = e.subject.y;
-        })
-        .on("drag", e => {
-            e.subject.fx = e.x;
-            e.subject.fy = e.y;
-        })
-        .on("end", e => {
-            if (!e.active) sim.alphaTarget(0);
-            e.subject.fx = null;
-            e.subject.fy = null;
-        });
-}
+        const svg = d3.select("#network")
+            .attr("width", width)
+            .attr("height", height);
 
+        const tooltip = d3.select("#tooltip");
 
-function updateTraffic() {
-    fetch("http://localhost:8001/stats")
-        .then(r => r.text())
-        .then(text => {
-            if (!text.trim()) return;
+        // Topology: 2 hosts, 4 switches
+        const nodes = [
+            { id: "h1", type: "host", x: 150, y: height / 2 },
+            { id: "h2", type: "host", x: width - 150, y: height / 2 },
+            { id: "s1", type: "switch", x: width / 2 - 100, y: height / 2 - 100 },
+            { id: "s2", type: "switch", x: width / 2 + 100, y: height / 2 - 100 },
+            { id: "s3", type: "switch", x: width / 2 - 100, y: height / 2 + 100 },
+            { id: "s4", type: "switch", x: width / 2 + 100, y: height / 2 + 100 }
+        ];
 
-            let rawStats;
-            try { rawStats = JSON.parse(text); }
-            catch { return; }   // ignore partial JSON
+        const links = [
+            { source: "h1", target: "s1", dpid: "1", port: 1 },
+            { source: "h1", target: "s2", dpid: "2", port: 1 },
+            { source: "h1", target: "s3", dpid: "3", port: 1 },
+            { source: "s1", target: "s4", dpid: "1", port: 2 },
+            { source: "s2", target: "s4", dpid: "2", port: 2 },
+            { source: "s3", target: "s4", dpid: "3", port: 2 },
+            { source: "s4", target: "h2", dpid: "4", port: 4 }
+        ];
 
-            // Normalize keys to strings
-            const stats = {};
-            for (const sw of Object.keys(rawStats)) {
-                stats[String(sw)] = {};
-                for (const port of Object.keys(rawStats[sw])) {
-                    stats[String(sw)][String(port)] = rawStats[sw][port];
-                }
-            }
+        // Draw links
+        const link = svg.append("g")
+            .selectAll("line")
+            .data(links)
+            .enter().append("line")
+            .attr("class", "link")
+            .attr("x1", d => nodes.find(n => n.id === d.source).x)
+            .attr("y1", d => nodes.find(n => n.id === d.source).y)
+            .attr("x2", d => nodes.find(n => n.id === d.target).x)
+            .attr("y2", d => nodes.find(n => n.id === d.target).y)
+            .attr("stroke", "#cbd5e0")
+            .attr("stroke-width", 4);
 
-            link.each(function(d) {
-                const swMatch = String(d.sw).match(/\d+/);
-                if (!swMatch) return "#444";
-                const sw = swMatch[0];
-                const port = String(d.port);
+        // Draw nodes
+        const node = svg.append("g")
+            .selectAll("g")
+            .data(nodes)
+            .enter().append("g")
+            .attr("class", "node")
+            .attr("transform", d => `translate(${d.x},${d.y})`);
 
-                // If missing sw or port in topology → safe default
-                if (!sw || !port || !stats[sw] || !stats[sw][port]) {
-                    d3.select(this).attr("stroke", "#444").attr("stroke-width", 2);
-                    return;
-                }
+        node.append("circle")
+            .attr("r", d => d.type === "host" ? 30 : 40)
+            .attr("fill", d => d.type === "host" ? "#4299e1" : "#48bb78")
+            .attr("stroke", "#fff")
+            .attr("stroke-width", 3);
 
-                const st = stats[sw][port];
-                const bps = (st.rx_bps || 0) + (st.tx_bps || 0);
+        node.append("text")
+            .attr("text-anchor", "middle")
+            .attr("dy", 5)
+            .attr("fill", "white")
+            .text(d => d.id);
 
-                d3.select(this)
-                    .attr("stroke", colorForTraffic(bps))
-                    .attr("stroke-width", thicknessForTraffic(bps));
-            });
-        });
-}
+        function updateMLPath() {
+            fetch("http://localhost:9000/predict")
+                .then(res => res.json())
+                .then(data => {
+                    if (!data.path || data.status === "warming_up") return;
 
+                    // Reset all links
+                    link.attr("stroke-opacity", 0.2);
 
-// Color scale
-function colorForTraffic(bps) {
-    if (bps < 1e5) return "#0000FF";          // idle
-    if (bps < 5e5) return "#FFA500";       // light
-    if (bps < 2e6) return "#FF0000";       // medium
-    return "#FF0000";                      // heavy
-}
+                    // Highlight predicted path
+                    data.path.reduce((from, to) => {
+                        link.filter(d => d.source === from && d.target === to)
+                            .attr("stroke", "#00bcd4")
+                            .attr("stroke-width", 10)
+                            .attr("stroke-opacity", 1);
+                        return to;
+                    });
+                })
+                .catch(err => console.error("ML path error:", err));
+        }
 
-// Link thickness
-function thicknessForTraffic(bps) {
-    return Math.min(2 + (bps / 5e5), 15);
-}
-</script>
+        
+        // Update function
+        function updateNetwork() {
+            fetch('http://localhost:8001/stats')
+                .then(res => res.json())
+                .then(stats => {
+                    let totalThroughput = 0;
+                    let totalDrops = 0;
+                    let activeLinks = 0;
 
+                    link.each(function (d) {
+                        const portStats = stats[d.dpid]?.[String(d.port)];
+                        if (!portStats) {
+                            d3.select(this)
+                                .attr("stroke", "#cbd5e0")
+                                .attr("stroke-width", 4)
+                                .attr("stroke-dasharray", "none");
+                            return;
+                        }
+
+                        const throughput = (portStats.tx_bps + portStats.rx_bps);
+                        const drops = portStats.tx_dropped || 0;
+                        const mbps = throughput / 1e6;
+
+                        totalThroughput += throughput;
+                        totalDrops += drops;
+                        if (throughput > 1e5) activeLinks++;
+
+                        // Color logic
+                        let color, width;
+                        if (drops > 0) {
+                            color = "#9f7aea";
+                            d3.select(this).attr("stroke-dasharray", "10,5");
+                        } else if (mbps < 5) {
+                            color = "#48bb78";
+                            d3.select(this).attr("stroke-dasharray", "none");
+                        } else if (mbps < 50) {
+                            color = "#ed8936";
+                            d3.select(this).attr("stroke-dasharray", "none");
+                        } else {
+                            color = "#f56565";
+                            d3.select(this).attr("stroke-dasharray", "none");
+                        }
+
+                        width = Math.min(4 + mbps * 0.1, 15);
+
+                        d3.select(this)
+                            .transition()
+                            .duration(500)
+                            .attr("stroke", color)
+                            .attr("stroke-width", width);
+
+                        // Tooltip
+                        d3.select(this)
+                            .on("mouseover", function (event) {
+                                tooltip.style("opacity", 1)
+                                    .html(`
+                                        <strong>${d.source} → ${d.target}</strong><br>
+                                        Throughput: ${mbps.toFixed(2)} Mbps<br>
+                                        Drops: ${drops} packets<br>
+                                        Queue: ${portStats.queue_len || 0}
+                                    `)
+                                    .style("left", (event.pageX + 15) + "px")
+                                    .style("top", (event.pageY - 28) + "px");
+                            })
+                            .on("mouseout", function () {
+                                tooltip.style("opacity", 0);
+                            });
+                    });
+
+                    // Update stats panel
+                    document.getElementById('total-throughput').textContent =
+                        (totalThroughput / 1e6).toFixed(2);
+                    document.getElementById('total-drops').textContent = totalDrops;
+                    document.getElementById('active-links').textContent = activeLinks;
+                })
+                .catch(err => console.error('Stats fetch error:', err));
+        }
+
+        // Update QoS Actions
+        function updateQoSActions() {
+            fetch('http://localhost:8001/qos-actions')
+                .then(res => res.json())
+                .then(actions => {
+                    const feed = document.getElementById('qos-feed');
+
+                    if (actions.length === 0) {
+                        feed.innerHTML = `
+                            <div style="color: #718096; font-size: 12px; font-style: italic;">
+                                No QoS actions yet...
+                            </div>
+                        `;
+                        return;
+                    }
+
+                    // Show last 5 actions
+                    const recent = actions.slice(-5).reverse();
+
+                    feed.innerHTML = recent.map(action => {
+                        const time = new Date(action.timestamp * 1000).toLocaleTimeString();
+                        const icon = action.type === 'REROUTE' ? '🔀' : '⚙️';
+                        const color = action.type === 'REROUTE' ? '#ed8936' : '#4299e1';
+
+                        return `
+                            <div style="
+                                background: ${color}15;
+                                border-left: 3px solid ${color};
+                                padding: 8px;
+                                margin-bottom: 8px;
+                                border-radius: 4px;
+                                font-size: 12px;
+                            ">
+                                <div style="font-weight: 600; color: ${color};">
+                                    ${icon} ${action.type}
+                                </div>
+                                <div style="color: #2d3748; margin-top: 4px;">
+                                    ${action.message}
+                                    </div>
+                                <div style="color: #a0aec0; font-size: 10px; margin-top: 4px;">
+                                    ${time}
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+                })
+                .catch(err => console.error('QoS actions fetch error:', err));
+        }
+
+        // Update every second
+        updateNetwork();
+        updateQoSActions();
+        setInterval(updateNetwork, 1000);
+        setInterval(updateQoSActions, 2000);
+        setInterval(updateMLPath, 2000);
+    </script>
 </body>
+
 </html>

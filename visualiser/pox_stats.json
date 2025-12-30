@@ -1,36 +1,4 @@
 {
-  "4": {
-    "65534": {
-      "tx_bps": 0.0,
-      "rx_bps": 0.0,
-      "tx_packets": 0,
-      "rx_packets": 0
-    },
-    "1": {
-      "tx_bps": 0.0,
-      "rx_bps": 327.76009762294234,
-      "tx_packets": 29225,
-      "rx_packets": 176189
-    },
-    "4": {
-      "tx_bps": 0.0,
-      "rx_bps": 0.0,
-      "tx_packets": 47205,
-      "rx_packets": 634050
-    },
-    "2": {
-      "tx_bps": 0.0,
-      "rx_bps": 0.0,
-      "tx_packets": 379992,
-      "rx_packets": 124
-    },
-    "3": {
-      "tx_bps": 0.0,
-      "rx_bps": 0.0,
-      "tx_packets": 76313,
-      "rx_packets": 124
-    }
-  },
   "1": {
     "65534": {
       "tx_bps": 0.0,
@@ -41,14 +9,46 @@
     "1": {
       "tx_bps": 0.0,
       "rx_bps": 0.0,
-      "tx_packets": 140,
-      "rx_packets": 176082
+      "tx_packets": 368,
+      "rx_packets": 1869987
     },
     "2": {
-      "tx_bps": 327.75385078669115,
+      "tx_bps": 0.0,
+      "rx_bps": 327.6674346281976,
+      "tx_packets": 1870327,
+      "rx_packets": 496
+    }
+  },
+  "4": {
+    "65534": {
+      "tx_bps": 0.0,
       "rx_bps": 0.0,
-      "tx_packets": 176189,
-      "rx_packets": 29225
+      "tx_packets": 0,
+      "rx_packets": 0
+    },
+    "4": {
+      "tx_bps": 327.77563766104583,
+      "rx_bps": 0.0,
+      "tx_packets": 173987,
+      "rx_packets": 852
+    },
+    "1": {
+      "tx_bps": 327.64831525914747,
+      "rx_bps": 0.0,
+      "tx_packets": 496,
+      "rx_packets": 1870327
+    },
+    "2": {
+      "tx_bps": 0.0,
+      "rx_bps": 0.0,
+      "tx_packets": 492763,
+      "rx_packets": 360
+    },
+    "3": {
+      "tx_bps": 0.0,
+      "rx_bps": 0.0,
+      "tx_packets": 803768,
+      "rx_packets": 358
     }
   },
   "3": {
@@ -59,16 +59,16 @@
       "rx_packets": 0
     },
     "1": {
-      "tx_bps": 326.1401870266667,
+      "tx_bps": 0.0,
       "rx_bps": 0.0,
-      "tx_packets": 144,
-      "rx_packets": 13
+      "tx_packets": 903,
+      "rx_packets": 14
     },
     "2": {
       "tx_bps": 0.0,
       "rx_bps": 0.0,
-      "tx_packets": 124,
-      "rx_packets": 76313
+      "tx_packets": 358,
+      "rx_packets": 803768
     }
   },
   "2": {
@@ -81,14 +81,14 @@
     "1": {
       "tx_bps": 0.0,
       "rx_bps": 0.0,
-      "tx_packets": 159,
-      "rx_packets": 13
+      "tx_packets": 925,
+      "rx_packets": 14
     },
     "2": {
       "tx_bps": 0.0,
       "rx_bps": 0.0,
-      "tx_packets": 124,
-      "rx_packets": 379992
+      "tx_packets": 360,
+      "rx_packets": 492763
     }
   }
 }
