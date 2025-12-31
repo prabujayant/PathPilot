@@ -9,7 +9,7 @@ STATS_URL = "http://localhost:8001/stats"
 OUTPUT_FILE = "dataset.npz"
 
 WINDOW = 10          # time steps
-SAMPLES = 300        # total samples to collect
+SAMPLES = 1500     # total samples to collect
 SLEEP = 1            # seconds
 
 def extract_features(stats):

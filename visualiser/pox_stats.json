@@ -1,4 +1,36 @@
 {
+  "4": {
+    "4": {
+      "tx_bps": 0.0,
+      "rx_bps": 0.0,
+      "tx_packets": 88430,
+      "rx_packets": 3745
+    },
+    "65534": {
+      "tx_bps": 0.0,
+      "rx_bps": 0.0,
+      "tx_packets": 0,
+      "rx_packets": 0
+    },
+    "1": {
+      "tx_bps": 327.7161405709519,
+      "rx_bps": 0.0,
+      "tx_packets": 1010,
+      "rx_packets": 1396156
+    },
+    "2": {
+      "tx_bps": 327.7161405709519,
+      "rx_bps": 0.0,
+      "tx_packets": 127360,
+      "rx_packets": 946
+    },
+    "3": {
+      "tx_bps": 0.0,
+      "rx_bps": 0.0,
+      "tx_packets": 499022,
+      "rx_packets": 946
+    }
+  },
   "1": {
     "65534": {
       "tx_bps": 0.0,
@@ -9,46 +41,14 @@
     "1": {
       "tx_bps": 0.0,
       "rx_bps": 0.0,
-      "tx_packets": 368,
-      "rx_packets": 1869987
+      "tx_packets": 959,
+      "rx_packets": 1395226
     },
     "2": {
       "tx_bps": 0.0,
-      "rx_bps": 0.0,
-      "tx_packets": 1870330,
-      "rx_packets": 498
-    }
-  },
-  "4": {
-    "65534": {
-      "tx_bps": 0.0,
-      "rx_bps": 0.0,
-      "tx_packets": 0,
-      "rx_packets": 0
-    },
-    "4": {
-      "tx_bps": 327.77563766104583,
-      "rx_bps": 0.0,
-      "tx_packets": 173987,
-      "rx_packets": 852
-    },
-    "1": {
-      "tx_bps": 0.0,
-      "rx_bps": 0.0,
-      "tx_packets": 498,
-      "rx_packets": 1870330
-    },
-    "2": {
-      "tx_bps": 0.0,
-      "rx_bps": 0.0,
-      "tx_packets": 492765,
-      "rx_packets": 363
-    },
-    "3": {
-      "tx_bps": 327.1330899489445,
-      "rx_bps": 0.0,
-      "tx_packets": 803771,
-      "rx_packets": 361
+      "rx_bps": 327.0579635482724,
+      "tx_packets": 1396156,
+      "rx_packets": 1010
     }
   },
   "3": {
@@ -61,14 +61,14 @@
     "1": {
       "tx_bps": 0.0,
       "rx_bps": 0.0,
-      "tx_packets": 903,
-      "rx_packets": 14
+      "tx_packets": 4517,
+      "rx_packets": 16
     },
     "2": {
       "tx_bps": 0.0,
-      "rx_bps": 329.13344274688626,
-      "tx_packets": 361,
-      "rx_packets": 803771
+      "rx_bps": 0.0,
+      "tx_packets": 946,
+      "rx_packets": 499022
     }
   },
   "2": {
@@ -81,14 +81,14 @@
     "1": {
       "tx_bps": 0.0,
       "rx_bps": 0.0,
-      "tx_packets": 925,
-      "rx_packets": 14
+      "tx_packets": 4528,
+      "rx_packets": 16
     },
     "2": {
       "tx_bps": 0.0,
-      "rx_bps": 0.0,
-      "tx_packets": 363,
-      "rx_packets": 492765
+      "rx_bps": 327.4761853867151,
+      "tx_packets": 946,
+      "rx_packets": 127360
     }
   }
 }
