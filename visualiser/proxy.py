@@ -4,22 +4,22 @@ import time
 import json
 
 PORT = 8001
-STATS_FILE = "/mnt/c/Programming/Python/qos/visualiser/pox_stats.json"
+STATS_FILE = "pox_stats.json"
 
 class Handler(BaseHTTPRequestHandler):
 
     def log_message(self, format, *args):
         return  # silence logs
 
-    def _safe_read_json(self):
+    def _safe_read_json(self, filename):
         """
-        Safely read the POX stats file:
+        Safely read a JSON file:
         - Retry until JSON is complete
         - Avoid partial reads
         """
         for _ in range(5):  # try up to 5 times
             try:
-                with open(STATS_FILE, "r") as f:
+                with open(filename, "r") as f:
                     data = f.read().strip()
 
                 # If file empty or not fully written → retry
@@ -41,9 +41,46 @@ class Handler(BaseHTTPRequestHandler):
 
         return "{}"  # give up after retries
 
+    def do_OPTIONS(self):
+        self.send_response(200)
+        self.send_header("Access-Control-Allow-Origin", "*")
+        self.send_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+        self.send_header("Access-Control-Allow-Headers", "Content-Type")
+        self.end_headers()
+
+    def do_POST(self):
+        if self.path == "/toggle-traffic":
+            content_length = int(self.headers['Content-Length'])
+            post_data = self.rfile.read(content_length)
+            
+            with open("traffic_control.json", "wb") as f:
+                f.write(post_data)
+
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json")
+            self.send_header("Access-Control-Allow-Origin", "*")
+            self.end_headers()
+            self.wfile.write(b'{"status": "ok"}')
+        else:
+            self.send_response(404)
+            self.end_headers()
+
     def do_GET(self):
         if self.path == "/stats":
-            data = self._safe_read_json()
+            data = self._safe_read_json(STATS_FILE)
+
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json")
+            self.send_header("Access-Control-Allow-Origin", "*")
+            self.end_headers()
+
+            try:
+                self.wfile.write(data.encode())
+            except BrokenPipeError:
+                pass
+
+        elif self.path == "/qos-actions":
+            data = self._safe_read_json("qos_actions.json")
 
             self.send_response(200)
             self.send_header("Content-Type", "application/json")
