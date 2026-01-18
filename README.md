@@ -9,6 +9,10 @@
 ![ML](https://img.shields.io/badge/ML-LSTM%20%2B%20PyTorch-red)
 ![SDN](https://img.shields.io/badge/SDN-POX%20%2B%20Mininet-purple)
 
+<br/>
+
+![PathPilot Dashboard](assets/dashboard.png)
+
 **A Real-Time Machine Learning System for Intelligent Path Selection and QoS Management in Software-Defined Networks**
 
 [Features](#-key-features) • [Architecture](#-system-architecture) • [Installation](#-installation--setup) • [Results](#-results--metrics)
